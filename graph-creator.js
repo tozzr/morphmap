@@ -53,23 +53,70 @@ var setupGraphEditor = function(d3, saveAs, Blob, graphData) {
       .append("svg:path")
       .attr("d", "M0,-5L10,0L0,5");
 
-    defs
-      .append("svg:pattern")
-      .attr("id", "image")
-      .attr("x", "-100")
-      .attr("y", "-75")
-      .attr("patternUnits", "userSpaceOnUse")
-      .attr("width", "200")
-      .attr("height", "150")
-      .append("svg:image")
-      .attr("x", "0")
-      .attr("y", "0")
-      .attr("width", "200")
-      .attr("height", "150")
-      .attr(
-        "xlink:href",
-        "http://www.worldofballpythons.com/files/morphs/yellow-belly/001.jpg"
-      );
+    var images = [
+      {
+        id: "image",
+        url:
+          "http://www.worldofballpythons.com/files/morphs/yellow-belly/001.jpg"
+      },
+      {
+        id: "cinnamon",
+        url: "http://www.worldofballpythons.com/files/morphs/cinnamon/001.jpg"
+      },
+      {
+        id: "pastel-spider",
+        url:
+          "http://www.worldofballpythons.com/files/morphs/pastel-spider/001.jpg"
+      },
+      {
+        id: "fire",
+        url: "http://www.worldofballpythons.com/files/morphs/fire/001.jpg"
+      },
+      {
+        id: "yellow-belly",
+        url:
+          "http://www.worldofballpythons.com/files/morphs/yellow-belly/001.jpg"
+      },
+      {
+        id: "fire-yellow-belly",
+        url:
+          "http://www.worldofballpythons.com/files/morphs/fire-yellow-belly/001.jpg"
+      },
+      {
+        id: "firefly-yellow-belly",
+        url:
+          "http://www.worldofballpythons.com/files/morphs/firefly-yellow-belly/001.jpg"
+      },
+      {
+        id: "pastel",
+        url: "http://www.worldofballpythons.com/files/morphs/pastel/001.jpg"
+      },
+      {
+        id: "pewter",
+        url: "http://www.worldofballpythons.com/files/morphs/pewter/001.jpg"
+      },
+      {
+        id: "spider",
+        url: "http://www.worldofballpythons.com/files/morphs/spider/001.jpg"
+      }
+    ];
+
+    images.forEach(function(img) {
+      defs
+        .append("svg:pattern")
+        .attr("id", img.id)
+        .attr("x", "-76")
+        .attr("y", "-50")
+        .attr("patternUnits", "userSpaceOnUse")
+        .attr("width", "133")
+        .attr("height", "100")
+        .append("svg:image")
+        .attr("x", "0")
+        .attr("y", "0")
+        .attr("width", "133")
+        .attr("height", "100")
+        .attr("xlink:href", img.url);
+    });
 
     thisGraph.svg = svg;
     thisGraph.svgG = svg.append("g").classed(thisGraph.consts.graphClass, true);
@@ -632,12 +679,10 @@ var setupGraphEditor = function(d3, saveAs, Blob, graphData) {
       })
       .call(thisGraph.drag);
 
-    newGs
-      .append("circle")
-      .attr("r", String(consts.nodeRadius))
-      .attr("fill", "url(#image)");
+    newGs.append("circle").attr("r", String(consts.nodeRadius));
 
     newGs.each(function(d) {
+      d3.select(this).attr("fill", "url(#" + d.title.replace(/ /g, "-") + ")");
       thisGraph.insertTitleLinebreaks(d3.select(this), d.title);
     });
 
