@@ -53,6 +53,24 @@ var setupGraphEditor = function(d3, saveAs, Blob, graphData) {
       .append("svg:path")
       .attr("d", "M0,-5L10,0L0,5");
 
+    defs
+      .append("svg:pattern")
+      .attr("id", "image")
+      .attr("x", "-100")
+      .attr("y", "-75")
+      .attr("patternUnits", "userSpaceOnUse")
+      .attr("width", "200")
+      .attr("height", "150")
+      .append("svg:image")
+      .attr("x", "0")
+      .attr("y", "0")
+      .attr("width", "200")
+      .attr("height", "150")
+      .attr(
+        "xlink:href",
+        "http://www.worldofballpythons.com/files/morphs/yellow-belly/001.jpg"
+      );
+
     thisGraph.svg = svg;
     thisGraph.svgG = svg.append("g").classed(thisGraph.consts.graphClass, true);
     var svgG = thisGraph.svgG;
@@ -617,7 +635,7 @@ var setupGraphEditor = function(d3, saveAs, Blob, graphData) {
     newGs
       .append("circle")
       .attr("r", String(consts.nodeRadius))
-      .attr("fill", "red");
+      .attr("fill", "url(#image)");
 
     newGs.each(function(d) {
       thisGraph.insertTitleLinebreaks(d3.select(this), d.title);
