@@ -1,1 +1,24 @@
-{"nodes":[{"id":2,"title":"fire yellow belly","x":846,"y":417},{"id":3,"title":"fire","x":738,"y":160},{"id":4,"title":"yellow belly","x":1060,"y":145},{"id":5,"title":"pastel","x":431,"y":151},{"id":6,"title":"pastel fire yellow belly","x":620,"y":569}],"edges":[{"source":3,"target":2},{"source":4,"target":2},{"source":5,"target":6},{"source":2,"target":6}]}
+{
+  "nodes": [
+    { "id": 2, "title": "fire yellow belly", "x": 934, "y": 293 },
+    { "id": 3, "title": "fire", "x": 802, "y": 80 },
+    { "id": 4, "title": "yellow belly", "x": 1050, "y": 79 },
+    { "id": 5, "title": "pastel", "x": 486, "y": 67 },
+    { "id": 6, "title": "pastel fire yellow belly", "x": 698, "y": 436 },
+    { "id": 6, "title": "random variable", "x": 277, "y": 433 },
+    { "id": 7, "title": "spider", "x": 150, "y": 73 },
+    { "id": 8, "title": "bumble bee", "x": 246, "y": 257 },
+    { "id": 9, "title": "cinnamon", "x": 525, "y": 441 },
+    { "id": 10, "title": "pewter", "x": 316, "y": 443 }
+  ],
+  "edges": [
+    { "source": 3, "target": 2 },
+    { "source": 4, "target": 2 },
+    { "source": 5, "target": 6 },
+    { "source": 2, "target": 6 },
+    { "source": 7, "target": 8 },
+    { "source": 5, "target": 8 },
+    { "source": 5, "target": 10 },
+    { "source": 9, "target": 10 }
+  ]
+}
