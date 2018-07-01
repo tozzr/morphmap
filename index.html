@@ -1,24 +1,173 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>morph map</title>
+<style>
+    .link {
+        fill: none;
+        stroke: #666;
+        stroke-width: 1.5px;
+    }
 
-<head>
-  <title>morph map</title>
-  <link rel="stylesheet" href="graph-creator.css" />
-</head>
+    .node circle {
+        stroke: #fff;
+        stroke-width: 1.5px;
+    }
+
+    .node:hover circle {
+        stroke: #ccc;
+        stroke-width: 1px;
+    }
+
+    text {
+        font: 10px sans-serif;
+        pointer-events: none;
+    }
+</style>
 
 <body>
-  <div id="graph">
-    <div id="toolbox">
-      <input type="file" id="hidden-file-upload">
-      <input id="upload-input" type="image" title="upload graph" src="upload-icon.png" alt="upload graph">
-      <input type="image" id="download-input" title="download graph" src="download-icon.png" alt="download graph">
-      <input type="image" id="delete-graph" title="delete graph" src="trash-icon.png" alt="delete graph">
-    </div>
-  </div>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script>
 
-  <script src="//d3js.org/d3.v3.js" charset="utf-8"></script>
-  <script src="//cdn.jsdelivr.net/filesaver.js/0.1/FileSaver.min.js"></script>
-  <script src="graph-creator.js"></script>
-</body>
+        var nodes = [
+            { id: 'normal', name: 'Normal', image: "http://www.worldofballpythons.com/files/morphs/normal/001.jpg" },
+            {
+                id: 'albino', name: 'Albino', image: "http://www.worldofballpythons.com/files/morphs/albino/albino-5kcg0eglywctmds.jpg",
+                genetics: ['normal']
+            },
+            {
+                id: 'cinnamon', name: 'Cinnamon', image: "http://www.worldofballpythons.com/files/morphs/cinnamon/001.jpg",
+                genetics: ['normal']
+            },
+            { id: 'butter', name: 'Butter', image: "http://www.worldofballpythons.com/files/morphs/butter/018.jpg", genetics: ['normal'] },
+            { id: 'fire', name: 'Fire', image: "http://www.worldofballpythons.com/files/morphs/fire/001.jpg", genetics: ['normal'] },
+            { id: 'mojave', name: 'Mojave', image: "http://www.worldofballpythons.com/files/morphs/mojave/001.jpg", genetics: ['normal'] },
+            { id: 'pastel', name: 'Pastel', image: "http://www.worldofballpythons.com/files/morphs/pastel/001.jpg", genetics: ['normal'] },
+            { id: 'spider', name: 'Spider', image: "http://www.worldofballpythons.com/files/morphs/spider/001.jpg", genetics: ['normal'] },
+            {
+                id: 'bumblebee', name: 'Bumblebee', image: "http://www.worldofballpythons.com/files/morphs/pastel-spider/001.jpg",
+                genetics: ['pastel', 'spider']
+            },
+            {
+                id: 'firefly', name: 'firefly', image: "http://www.worldofballpythons.com/files/morphs/firefly/001.jpg",
+                genetics: ['pastel', 'fire']
+            },
+            {
+                id: 'pewter', name: 'Pewter', image: "http://www.worldofballpythons.com/files/morphs/pewter/001.jpg",
+                genetics: ['pastel', 'cinnamon']
+            },
+            {
+                id: 'superpastel', name: 'Super Pastel', image: "http://www.worldofballpythons.com/files/morphs/super-pastel/001.jpg",
+                genetics: ['pastel', 'pastel']
+            }
+        ];
+        var links = [];
+        nodes.forEach(function (n) {
+            if (n.genetics && n.genetics.length > 0) {
+                n.genetics.forEach(function (g) {
+                    links.push({ source: indexOf(g), target: indexOf(n.id) })
+                })
+            }
+        });
 
-</html>
+        function indexOf(id) {
+            var index = 0;
+            nodes.forEach(function (n, i) {
+                if (n.id == id) {
+                    index = i;
+                }
+            })
+            return index;
+        }
+        var width = 960,
+            height = 500;
+
+        var force = d3.layout.force()
+            .nodes(d3.values(nodes))
+            .links(links)
+            .size([width, height])
+            .linkDistance(200)
+            .charge(-300)
+            .on("tick", tick)
+            .start();
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        var defs = svg.append("svg:defs");
+
+        nodes.forEach(function (node) {
+            defs
+                .append("svg:pattern")
+                .attr("id", node.id)
+                .attr("x", "-100")
+                .attr("y", "-75")
+                .attr("patternUnits", "userSpaceOnUse")
+                .attr("width", "200")
+                .attr("height", "150")
+                .append("svg:image")
+                .attr("x", "0")
+                .attr("y", "0")
+                .attr("width", "200")
+                .attr("height", "150")
+                .attr("xlink:href", node.image);
+        });
+
+        var link = svg.selectAll(".link")
+            .data(force.links())
+            .enter().append("line")
+            .attr("class", "link");
+
+        var node = svg.selectAll(".node")
+            .data(force.nodes())
+            .enter().append("g")
+            .attr("class", "node")
+            .on("mouseover", mouseover)
+            .on("mouseout", mouseout)
+            .call(force.drag);
+
+        node.append("circle")
+            .attr("r", 32)
+            .attr("fill", function (d) {
+                return "url(#" + d.id + ")"
+            });
+
+        node.append("text")
+            .attr("x", 36)
+            .attr("dy", ".35em")
+            .attr("fill", "none")
+            .text(function (d) { return d.name; });
+
+        function tick() {
+            link
+                .attr("x1", function (d) { return d.source.x; })
+                .attr("y1", function (d) { return d.source.y; })
+                .attr("x2", function (d) { return d.target.x; })
+                .attr("y2", function (d) { return d.target.y; });
+
+            node
+                .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
+        }
+
+        function mouseover() {
+            this.parentElement.appendChild(this);
+            d3.select(this).select("circle").transition()
+                .duration(750)
+                .attr("r", 64);
+            d3.select(this).select("text").transition()
+                .duration(750)
+                .attr("x", 68)
+                .attr("fill", "#000");
+        }
+
+        function mouseout() {
+            d3.select(this).select("circle").transition()
+                .duration(750)
+                .attr("r", 32);
+            d3.select(this).select("text").transition()
+                .duration(750)
+                .attr("x", 36)
+                .attr("fill", "none");
+        }
+
+    </script>
