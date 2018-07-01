@@ -2,24 +2,28 @@
 <meta charset="utf-8">
 <title>morph map</title>
 <style>
+    body {
+        background-color: #000;
+    }
+
     .link {
         fill: none;
-        stroke: #666;
+        stroke: rgb(255, 255, 0);
         stroke-width: 1.5px;
     }
 
     .node circle {
         stroke: #fff;
-        stroke-width: 1.5px;
+        stroke-width: 1px;
     }
 
     .node:hover circle {
-        stroke: #ccc;
+        stroke: #ff0;
         stroke-width: 1px;
     }
 
     text {
-        font: 10px sans-serif;
+        font: 18px sans-serif;
         pointer-events: none;
     }
 </style>
@@ -32,6 +36,14 @@
             { id: 'normal', name: 'Normal', image: "http://www.worldofballpythons.com/files/morphs/normal/001.jpg" },
             {
                 id: 'albino', name: 'Albino', image: "http://www.worldofballpythons.com/files/morphs/albino/albino-5kcg0eglywctmds.jpg",
+                genetics: ['normal']
+            },
+            {
+                id: 'blitz', name: 'Blitz', image: "http://www.worldofballpythons.com/files/morphs/blitz/002.jpg",
+                genetics: ['normal']
+            },
+            {
+                id: 'calico', name: 'Calico', image: "http://www.worldofballpythons.com/files/morphs/calico/001.jpg",
                 genetics: ['normal']
             },
             {
@@ -48,7 +60,7 @@
                 genetics: ['pastel', 'spider']
             },
             {
-                id: 'firefly', name: 'firefly', image: "http://www.worldofballpythons.com/files/morphs/firefly/001.jpg",
+                id: 'firefly', name: 'Firefly', image: "http://www.worldofballpythons.com/files/morphs/firefly/001.jpg",
                 genetics: ['pastel', 'fire']
             },
             {
@@ -85,8 +97,8 @@
             .nodes(d3.values(nodes))
             .links(links)
             .size([width, height])
-            .linkDistance(200)
-            .charge(-300)
+            .linkDistance(150)
+            .charge(-600)
             .on("tick", tick)
             .start();
 
@@ -147,9 +159,10 @@
 
             node
                 .attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
+
         }
 
-        function mouseover() {
+        function mouseover(thisNode) {
             this.parentElement.appendChild(this);
             d3.select(this).select("circle").transition()
                 .duration(750)
@@ -157,7 +170,17 @@
             d3.select(this).select("text").transition()
                 .duration(750)
                 .attr("x", 68)
-                .attr("fill", "#000");
+                .attr("fill", "#ff0");
+            d3.selectAll(".link")
+                .filter(function (d) {
+                    return (d.source === thisNode || d.target === thisNode);
+                })
+                .style("stroke", "#0f0");
+            d3.selectAll(".link")
+                .filter(function (d) {
+                    return (d.source != thisNode && d.target != thisNode);
+                })
+                .style("stroke", "none");
         }
 
         function mouseout() {
@@ -168,6 +191,8 @@
                 .duration(750)
                 .attr("x", 36)
                 .attr("fill", "none");
+            d3.selectAll(".link")
+                .style("stroke", "#ff0");
         }
 
     </script>
