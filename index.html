@@ -186,7 +186,15 @@
             .attr("x", 36)
             .attr("dy", ".35em")
             .attr("fill", "none")
-            .text(function (d) { return d.name; });
+            .text(function (d) { return d.name; })
+            .call(getTextBox);
+
+        node.insert("rect", "text")
+            .attr("x", function (d) { return d.bbox.x })
+            .attr("y", function (d) { return d.bbox.y })
+            .attr("width", function (d) { return d.bbox.width })
+            .attr("height", function (d) { return d.bbox.height })
+            .style("fill", "none");
 
         function tick() {
             link
@@ -200,11 +208,19 @@
 
         }
 
+        function getTextBox(selection) {
+            selection.each(function (d) { d.bbox = this.getBBox(); })
+        }
+
         function mouseover(thisNode) {
             this.parentElement.appendChild(this);
             d3.select(this).select("circle").transition()
                 .duration(750)
                 .attr("r", 64);
+            d3.select(this).select("rect").transition()
+                .duration(750)
+                .attr("x", 68)
+                .style("fill", "#000");
             d3.select(this).select("text").transition()
                 .duration(750)
                 .attr("x", 68)
@@ -225,6 +241,10 @@
             d3.select(this).select("circle").transition()
                 .duration(750)
                 .attr("r", 32);
+            d3.select(this).select("rect").transition()
+                .duration(750)
+                .attr("x", 36)
+                .style("fill", "none");
             d3.select(this).select("text").transition()
                 .duration(750)
                 .attr("x", 36)
