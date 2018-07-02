@@ -6,6 +6,14 @@
         background-color: #000;
     }
 
+    #map {
+        position: fixed;
+        left: 0px;
+        right: 0px;
+        top: 0px;
+        bottom: 0px;
+    }
+
     .link {
         fill: none;
         stroke: rgb(255, 255, 0);
@@ -29,6 +37,7 @@
 </style>
 
 <body>
+    <div id="map"></div>
     <script src="//d3js.org/d3.v3.min.js"></script>
     <script>
 
@@ -53,15 +62,30 @@
             { id: 'butter', name: 'Butter', image: "http://www.worldofballpythons.com/files/morphs/butter/018.jpg", genetics: ['normal'] },
             { id: 'fire', name: 'Fire', image: "http://www.worldofballpythons.com/files/morphs/fire/001.jpg", genetics: ['normal'] },
             { id: 'mojave', name: 'Mojave', image: "http://www.worldofballpythons.com/files/morphs/mojave/001.jpg", genetics: ['normal'] },
+            { id: 'orange-dream', name: 'Orange Dream', image: "http://www.worldofballpythons.com/files/morphs/orange-dream/005.jpg", genetics: ['normal'] },
             { id: 'pastel', name: 'Pastel', image: "http://www.worldofballpythons.com/files/morphs/pastel/001.jpg", genetics: ['normal'] },
+            { id: 'pinstripe', name: 'Pinstripe', image: "http://www.worldofballpythons.com/files/morphs/pinstripe/001.jpg", genetics: ['normal'] },
             { id: 'spider', name: 'Spider', image: "http://www.worldofballpythons.com/files/morphs/spider/001.jpg", genetics: ['normal'] },
+            { id: 'yellow-belly', name: 'Yellow Belly', image: "http://www.worldofballpythons.com/files/morphs/yellow-belly/012.jpg", genetics: ['normal'] },
             {
                 id: 'bumblebee', name: 'Bumblebee', image: "http://www.worldofballpythons.com/files/morphs/pastel-spider/001.jpg",
                 genetics: ['pastel', 'spider']
             },
             {
+                id: 'calider', name: 'Calider', image: "http://www.worldofballpythons.com/files/morphs/calider/001.jpg",
+                genetics: ['calico', 'spider']
+            },
+            {
                 id: 'firefly', name: 'Firefly', image: "http://www.worldofballpythons.com/files/morphs/firefly/001.jpg",
                 genetics: ['pastel', 'fire']
+            },
+            {
+                id: 'lemonblast', name: 'Lemonblast', image: "http://www.worldofballpythons.com/files/morphs/lemon-blast/013.jpg",
+                genetics: ['pastel', 'pinstripe']
+            },
+            {
+                id: 'od-yb', name: 'OD YB', image: "http://www.worldofballpythons.com/files/morphs/orange-dream-yellow-belly/002.jpg",
+                genetics: ['orange-dream', 'yellow-belly']
             },
             {
                 id: 'pewter', name: 'Pewter', image: "http://www.worldofballpythons.com/files/morphs/pewter/001.jpg",
@@ -90,19 +114,21 @@
             })
             return index;
         }
-        var width = 960,
-            height = 500;
+        var mapDiv = document.getElementById("map");
+        var width = mapDiv.clientWidth;
+        var height = mapDiv.clientHeight;
 
         var force = d3.layout.force()
             .nodes(d3.values(nodes))
             .links(links)
             .size([width, height])
-            .linkDistance(150)
-            .charge(-600)
+            .linkDistance(200)
+            .gravity(0.05)
+            .charge(-750)
             .on("tick", tick)
             .start();
 
-        var svg = d3.select("body").append("svg")
+        var svg = d3.select(mapDiv).append("svg")
             .attr("width", width)
             .attr("height", height);
 
@@ -125,10 +151,22 @@
                 .attr("xlink:href", node.image);
         });
 
+        var filter = defs.append("filter")
+            .attr("id", "glow");
+        filter.append("feGaussianBlur")
+            .attr("stdDeviation", "3.5")
+            .attr("result", "coloredBlur");
+        var feMerge = filter.append("feMerge");
+        feMerge.append("feMergeNode")
+            .attr("in", "coloredBlur");
+        feMerge.append("feMergeNode")
+            .attr("in", "SourceGraphic")
+
         var link = svg.selectAll(".link")
             .data(force.links())
             .enter().append("line")
-            .attr("class", "link");
+            .attr("class", "link")
+            .attr("filter", "url(#glow)");
 
         var node = svg.selectAll(".node")
             .data(force.nodes())
